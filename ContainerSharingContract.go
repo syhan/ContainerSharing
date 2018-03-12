@@ -50,7 +50,7 @@ func Match(stub shim.ChaincodeStubInterface, request Request) error {
 		key = "Supply"
 	}
 
-	iter, err := stub.GetStateByPartialCompositeKey(key, nil)
+	iter, err := stub.GetStateByPartialCompositeKey(key, []string{})
 	defer iter.Close()
 
 	if err != nil {
@@ -64,8 +64,7 @@ func Match(stub shim.ChaincodeStubInterface, request Request) error {
 			return fmt.Errorf("Error getting next")
 		}
 
-		k, parts, e := stub.SplitCompositeKey(r.Key)
-		_ = parts
+		/*_, _, e := stub.SplitCompositeKey(r.Key)
 		if e != nil {
 			return fmt.Errorf("Error split composite key")
 		}
@@ -73,10 +72,10 @@ func Match(stub shim.ChaincodeStubInterface, request Request) error {
 		value, e := stub.GetState(k)
 		if e != nil {
 			return fmt.Errorf("Error get state")
-		}
+		}*/
 
 		var req Request
-		e = json.Unmarshal(value, &req)
+		e = json.Unmarshal(r.Value, &req)
 		if e != nil {
 			return fmt.Errorf(fmt.Sprintf("Error unmarshal %s", e.Error()))
 		}
