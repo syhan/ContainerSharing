@@ -1,2 +1,2 @@
-# ContainerSharing
-A chaincode/smart contract PoC on top of hyperledger
+# Seawide
+Some proof of concept on hyperledger chaincode and spark
