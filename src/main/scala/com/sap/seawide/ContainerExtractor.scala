@@ -8,7 +8,7 @@ import org.elasticsearch.spark._
 import play.api.libs.json.{JsUndefined, Json}
 import scalaj.http.{Http, HttpResponse}
 
-import scala.util.Random
+import scala.util.{Random, Try}
 
 
 object ContainerExtractor {
@@ -30,6 +30,8 @@ object ContainerExtractor {
 
   def cosco(sc: SparkContext): Unit = {
     vendor(sc, Seq("CCLU"), "http://elines.coscoshipping.com/ebtracking/public/containers/")
+      .filter(_.isSuccess)
+      .map(_.get)
       .map(r => Json.parse(r.body))
       .filter(json => (json \ "code").as[String].eq("200") && (json \ "data" \ "content" \ "notFound").as[String].isEmpty)
       .saveToEs("cosco/containers")
@@ -37,6 +39,8 @@ object ContainerExtractor {
 
   def maersk(sc: SparkContext): Unit = {
     vendor(sc, Seq("MSKU"), "https://api.maerskline.com/track/")
+      .filter(_.isSuccess)
+      .map(_.get)
       .filter(_.is2xx)
       .map(_.body)
       .saveToEs("maersk/containers")
@@ -45,10 +49,12 @@ object ContainerExtractor {
 
   def cmacgm(sc: SparkContext): Unit = {
     vendor(sc, Seq("CMAU"), "http://zhixiangsou.chinaports.com/CntrSearch/clientSearchByCntrNo?company=8&mode=cntr&cntrNo=")
+      .filter(_.isSuccess)
+      .map(_.get)
       .map(r => Json.parse(r.body))
       .filter(json => !(json \ "coscoCntrRecordList").isInstanceOf[JsUndefined])
-      .saveToEs("cmacgm/containers")
-//      .foreach(println)
+//      .saveToEs("cmacgm/containers")
+      .foreach(println)
   }
 
   def valid(num: String): Boolean = { // https://en.wikipedia.org/wiki/ISO_6346
@@ -63,22 +69,23 @@ object ContainerExtractor {
     sc.parallelize(Range(range._1, range._2)).flatMap(s => prefix.map(p => "%s%07d".format(p, s))).filter(valid)
   }
 
-  def vendor(sc: SparkContext, prefix: Seq[String], url: String): RDD[HttpResponse[String]] = {
-    //    val range = 1000000
-    val range = 5008500
-
-    serialNumber(sc, (5008000, range), prefix).map(number => {
-      val proxy = randomProxy(number)
+  def vendor(sc: SparkContext, prefix: Seq[String], url: String): RDD[Try[HttpResponse[String]]] = {
+    val q: String => Try[HttpResponse[String]] = (n: String) => {
+      val proxy = randomProxy(n)
 
       Thread.sleep(1000) // be polite and not too aggressive
 
-      println(s"Querying $number with $proxy...")
+      println(s"Sending querying request to $url$n with $proxy...")
 
-      Http(s"$url$number")
+      Try(Http(s"$url$n")
         .proxy(proxy, 8080)
         .timeout(50000, 50000)
-        .asString
-    })
+        .asString)//.recoverWith(q)
+    }
+
+    //    val range = 1000000
+    val range = 5009050
+    serialNumber(sc, (5009000, range), prefix).map(q)
   }
 
   def randomProxy(num: String): String = {
