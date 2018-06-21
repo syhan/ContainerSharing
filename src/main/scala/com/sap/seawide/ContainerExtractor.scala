@@ -5,7 +5,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.elasticsearch.spark._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsUndefined, Json}
 import scalaj.http.{Http, HttpResponse}
 
 import scala.util.Random
@@ -25,23 +25,30 @@ object ContainerExtractor {
 
     val sc = spark.sparkContext
 
-    maersk(sc)
+    cmacgm(sc)
   }
 
   def cosco(sc: SparkContext): Unit = {
     vendor(sc, Seq("CCLU"), "http://elines.coscoshipping.com/ebtracking/public/containers/")
       .map(r => Json.parse(r.body))
       .filter(json => (json \ "code").as[String].eq("200") && (json \ "data" \ "content" \ "notFound").as[String].isEmpty)
-      .map(Json.stringify)
-      .saveToEs("containers/cosco")
+      .saveToEs("cosco/containers")
   }
 
   def maersk(sc: SparkContext): Unit = {
     vendor(sc, Seq("MSKU"), "https://api.maerskline.com/track/")
       .filter(_.is2xx)
       .map(_.body)
-      .saveToEs("containers/maersk")
+      .saveToEs("maersk/containers")
     //      .foreach(println)
+  }
+
+  def cmacgm(sc: SparkContext): Unit = {
+    vendor(sc, Seq("CMAU"), "http://zhixiangsou.chinaports.com/CntrSearch/clientSearchByCntrNo?company=8&mode=cntr&cntrNo=")
+      .map(r => Json.parse(r.body))
+      .filter(json => !(json \ "coscoCntrRecordList").isInstanceOf[JsUndefined])
+      .saveToEs("cmacgm/containers")
+//      .foreach(println)
   }
 
   def valid(num: String): Boolean = { // https://en.wikipedia.org/wiki/ISO_6346
@@ -58,9 +65,9 @@ object ContainerExtractor {
 
   def vendor(sc: SparkContext, prefix: Seq[String], url: String): RDD[HttpResponse[String]] = {
     //    val range = 1000000
-    val range = 5005500
+    val range = 5008500
 
-    serialNumber(sc, (5005000, range), prefix).map(number => {
+    serialNumber(sc, (5008000, range), prefix).map(number => {
       val proxy = randomProxy(number)
 
       Thread.sleep(1000) // be polite and not too aggressive
