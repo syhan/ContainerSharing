@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5bd6b1a-30af-46b4-afef-dc578f6c0e07" name="Default" comment="">
+    <list default="true" id="b5bd6b1a-30af-46b4-afef-dc578f6c0e07" name="Default" comment="Fix the wrong equality check &#10;&#10;Scala `eq` is actually comparing two references which like `==`">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/com/sap/seawide/ContainerExtractor.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/sap/seawide/ContainerExtractor.scala" afterDir="false" />
     </list>
@@ -66,8 +66,8 @@
       <file leaf-file-name="ContainerExtractor.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/com/sap/seawide/ContainerExtractor.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="57" column="3" lean-forward="true" selection-start-line="57" selection-start-column="3" selection-end-line="57" selection-end-column="3" />
+            <state relative-caret-position="216">
+              <caret line="36" column="125" selection-start-line="36" selection-start-column="125" selection-end-line="36" selection-end-column="125" />
               <folding>
                 <element signature="e#26#62#0" expanded="true" />
               </folding>
@@ -412,7 +412,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1529045368755</updated>
-      <workItem from="1529045371892" duration="46626000" />
+      <workItem from="1529045371892" duration="49220000" />
     </task>
     <task id="LOCAL-00001" summary="Implemented data extract from chinaports">
       <created>1529561076844</created>
@@ -421,11 +421,18 @@
       <option name="project" value="LOCAL" />
       <updated>1529561076844</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Use functional programming way (Try) to handle exception">
+      <created>1529573863982</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1529573863982</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="46626000" />
+    <option name="totallyTimeSpent" value="49220000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
@@ -468,7 +475,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Implemented data extract from chinaports" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented data extract from chinaports" />
+    <MESSAGE value="Use functional programming way (Try) to handle exception" />
+    <MESSAGE value="Fix the wrong equality check &#10;&#10;Scala `eq` is actually comparing two references which like `==`" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix the wrong equality check &#10;&#10;Scala `eq` is actually comparing two references which like `==`" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -674,8 +683,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/sap/seawide/ContainerExtractor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="57" column="3" lean-forward="true" selection-start-line="57" selection-start-column="3" selection-end-line="57" selection-end-column="3" />
+        <state relative-caret-position="216">
+          <caret line="36" column="125" selection-start-line="36" selection-start-column="125" selection-end-line="36" selection-end-column="125" />
           <folding>
             <element signature="e#26#62#0" expanded="true" />
           </folding>

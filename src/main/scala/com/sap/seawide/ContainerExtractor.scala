@@ -25,7 +25,8 @@ object ContainerExtractor {
 
     val sc = spark.sparkContext
 
-    cmacgm(sc)
+//    cmacgm(sc)
+    cosco(sc)
   }
 
   def cosco(sc: SparkContext): Unit = {
@@ -33,8 +34,9 @@ object ContainerExtractor {
       .filter(_.isSuccess)
       .map(_.get)
       .map(r => Json.parse(r.body))
-      .filter(json => (json \ "code").as[String].eq("200") && (json \ "data" \ "content" \ "notFound").as[String].isEmpty)
-      .saveToEs("cosco/containers")
+      .filter(json => (json \ "code").as[String].equals("200") && (json \ "data" \ "content" \ "notFound").as[String].isEmpty)
+      .foreach(println)
+//      .saveToEs("cosco/containers")
   }
 
   def maersk(sc: SparkContext): Unit = {
@@ -84,12 +86,12 @@ object ContainerExtractor {
     }
 
     //    val range = 1000000
-    val range = 5009050
-    serialNumber(sc, (5009000, range), prefix).map(q)
+    val range = 5069050
+    serialNumber(sc, (5069000, range), prefix).map(q)
   }
 
   def randomProxy(num: String): String = {
-    val domains: List[String] = List(/*"wdf", "pal", "sin", "pvgl", "pek", */ "hkg", "tyo", "nyc", "bos", "sfo", "phl" /*, "man", "muc", "fra", "ber", "vie"*/)
+    val domains: List[String] = List(/*"wdf", "pal", "sin", */"pvgl", "pek", "hkg"/*, "tyo", "nyc", "bos", "sfo", "phl" , "man", "muc", "fra", "ber", "vie"*/)
     val seed = num.substring(5).toInt * new Random().nextInt(1000)
     val domain = domains(seed % domains.size)
 
