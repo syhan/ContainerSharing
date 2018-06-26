@@ -3,11 +3,13 @@ package com.sap.seawide
 import java.util.Properties
 
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.common.serialization.StringSerializer
 
 object ContainerProducer {
   def main(args: Array[String]): Unit = {
     val producer = new KafkaProducer[String, String](config())
-    CmaCgmContainerGenerator.generate().foreach(n => producer.send(new ProducerRecord[String, String]("containers","cmacgm", n)))
+
+    CmaCgmContainerGenerator.generate().foreach(n => producer.send(new ProducerRecord[String, String]("vendors","cmacgm", n)))
 
     producer.close()
   }
@@ -16,8 +18,8 @@ object ContainerProducer {
     val props = new Properties
 
     props.put("bootstrap.servers", "localhost:9092")
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("key.serializer", classOf[StringSerializer])
+    props.put("value.serializer", classOf[StringSerializer])
 
     props
   }

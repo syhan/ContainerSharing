@@ -32,8 +32,6 @@
     <orderEntry type="library" name="sbt: com.typesafe:config:1.3.0:jar" level="project" />
     <orderEntry type="library" name="sbt: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.4:jar" level="project" />
     <orderEntry type="library" name="sbt: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.5.4:jar" level="project" />
-    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-databind:2.6.7.1:jar" level="project" />
-    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-annotations:2.6.7:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scala-stm:scala-stm_2.11:0.7:jar" level="project" />
     <orderEntry type="library" name="sbt: org.elasticsearch:elasticsearch-hadoop:6.2.1:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalaj:scalaj-http_2.11:2.4.0:jar" level="project" />
@@ -181,7 +179,6 @@
     <orderEntry type="library" name="sbt: com.esotericsoftware:kryo-shaded:3.0.3:jar" level="project" />
     <orderEntry type="library" name="sbt: com.clearspring.analytics:stream:2.7.0:jar" level="project" />
     <orderEntry type="library" name="sbt: com.carrotsearch:hppc:0.7.2:jar" level="project" />
-    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-core:2.7.9:jar" level="project" />
     <orderEntry type="library" name="sbt: com.google.code.findbugs:jsr305:3.0.2:jar" level="project" />
     <orderEntry type="library" name="sbt: com.univocity:univocity-parsers:2.5.9:jar" level="project" />
     <orderEntry type="library" name="sbt: com.vlkan:flatbuffers:1.2.0-3f79e055:jar" level="project" />
@@ -207,5 +204,12 @@
     <orderEntry type="library" name="sbt: org.slf4j:slf4j-api:1.7.25:jar" level="project" />
     <orderEntry type="library" name="sbt: org.apache.kafka:kafka-clients:1.1.0:jar" level="project" />
     <orderEntry type="library" name="sbt: org.xerial.snappy:snappy-java:1.1.7.1:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-annotations:2.9.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-core:2.9.4:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.fasterxml.jackson.core:jackson-databind:2.9.4:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.apache.kafka:connect-api:1.1.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.apache.kafka:connect-json:1.1.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.apache.kafka:kafka-streams:1.1.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.rocksdb:rocksdbjni:5.7.3:jar" level="project" />
   </component>
 </module>
