@@ -4,6 +4,8 @@ package com.sap.seawide
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.streaming.kafka010.{CanCommitOffsets, ConsumerStrategies, KafkaUtils, LocationStrategies}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.elasticsearch.spark._
 import play.api.libs.json.{JsUndefined, Json}
 import scalaj.http.{Http, HttpResponse}
@@ -16,7 +18,7 @@ object ContainerExtractor {
   def main(args: Array[String]): Unit = {
 
     val spark = SparkSession.builder
-      .master("local[*]")
+      .master("local[2]")
       .appName("Container Extractor")
       .config("es.index.auto.create", "true")
       .config("es.input.json", "true")
@@ -24,19 +26,38 @@ object ContainerExtractor {
       .getOrCreate()
 
     val sc = spark.sparkContext
+    val ssc = new StreamingContext(sc, Seconds(1))
+//    ssc.checkpoint("container-extractor")
 
-//    cmacgm(sc)
-    cosco(sc)
+    val parameters = Map[String, Object](
+      "bootstrap.servers" -> "localhost:9092",
+      "group.id" -> "42",
+      "key.deserializer" -> "org.apache.kafka.common.serialization.StringDeserializer",
+      "value.deserializer" -> "org.apache.kafka.common.serialization.StringDeserializer")
+
+    val stream = KafkaUtils.createDirectStream(ssc, LocationStrategies.PreferConsistent, ConsumerStrategies.Subscribe[String, String](Seq("containers"), parameters))
+
+    stream.foreachRDD(rdd => {
+      rdd.foreachPartition(iter => {
+        iter.foreach(println)
+
+      })
+//      rdd.foreach(println)
+//      stream.asInstanceOf[CanCommitOffsets].commitAsync()
+    })
+
+    ssc.start()
+    ssc.awaitTermination()
   }
 
   def cosco(sc: SparkContext): Unit = {
-    vendor(sc, Seq("CCLU"), "http://elines.coscoshipping.com/ebtracking/public/containers/")
+    vendor(sc, Seq("CCLU", "CSLU"), "http://elines.coscoshipping.com/ebtracking/public/containers/")
+//      .foreach(println)
       .filter(_.isSuccess)
       .map(_.get)
       .map(r => Json.parse(r.body))
       .filter(json => (json \ "code").as[String].equals("200") && (json \ "data" \ "content" \ "notFound").as[String].isEmpty)
-      .foreach(println)
-//      .saveToEs("cosco/containers")
+      .saveToEs("cosco/containers")
   }
 
   def maersk(sc: SparkContext): Unit = {
@@ -50,7 +71,7 @@ object ContainerExtractor {
   }
 
   def cmacgm(sc: SparkContext): Unit = {
-    vendor(sc, Seq("CMAU"), "http://zhixiangsou.chinaports.com/CntrSearch/clientSearchByCntrNo?company=8&mode=cntr&cntrNo=")
+    vendor(sc, Seq("CMAU", "CMCU"), "http://zhixiangsou.chinaports.com/CntrSearch/clientSearchByCntrNo?company=8&mode=cntr&cntrNo=")
       .filter(_.isSuccess)
       .map(_.get)
       .map(r => Json.parse(r.body))
@@ -75,7 +96,7 @@ object ContainerExtractor {
     val q: String => Try[HttpResponse[String]] = (n: String) => {
       val proxy = randomProxy(n)
 
-      Thread.sleep(1000) // be polite and not too aggressive
+      Thread.sleep(1000 + new Random().nextInt(2000)) // be polite and not too aggressive
 
       println(s"Sending querying request to $url$n with $proxy...")
 
@@ -85,9 +106,10 @@ object ContainerExtractor {
         .asString)//.recoverWith(q)
     }
 
-    //    val range = 1000000
-    val range = 5069050
-    serialNumber(sc, (5069000, range), prefix).map(q)
+    //    val start = 1000000
+    val start = 1
+    val offset = 1000000
+    serialNumber(sc, (start, start + offset), prefix).map(q)
   }
 
   def randomProxy(num: String): String = {
@@ -96,10 +118,6 @@ object ContainerExtractor {
     val domain = domains(seed % domains.size)
 
     s"proxy.$domain.sap.corp"
-  }
-
-  def blacklist(number: String, domain: String): Unit = {
-
   }
 
 }
