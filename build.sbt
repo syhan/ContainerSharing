@@ -10,7 +10,7 @@ developers := List(
 organization := "com.sap"
 organizationName := "seawide"
 organizationHomepage := Option(url("http://seawider.com"))
-scmInfo := Option(ScmInfo(url("https://github.com/syhan/seawide")))
+scmInfo := Option(ScmInfo(url("https://github.com/syhan/seawide"), "git@github.com:syhan/seawide.git"))
 
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.3.1"
 libraryDependencies += "org.apache.spark" % "spark-streaming_2.11" % "2.3.1"

@@ -1,8 +1,11 @@
 
 package com.sap.seawide
 
+import java.util.function.Predicate
+
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.kstream.KStream
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
@@ -43,8 +46,12 @@ object ContainerExtractor {
   val topics: Iterable[String] = Array("vendors")
 
   def main(args: Array[String]): Unit = {
-    val builder = new StreamsBuilder()
-    builder.stream("")
+    val maersk = new Predicate[String, String] {
+      override def test(t: String, c: String): Boolean = t.startsWith("maersk")
+    }
+
+    val rawStream: KStream[String, String] = new StreamsBuilder().stream("vendors")
+    rawStream.branch(maersk)
 
     val ssc = new StreamingContext(sc, Seconds(5))
     val stream = KafkaUtils.createDirectStream[String, String](
@@ -56,7 +63,6 @@ object ContainerExtractor {
     stream.foreachRDD(rdd => {
       val offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
 
-//      rdd.map(r => "{\"value\": \"" + r.value() + "\"}").saveToEs("test/test")
 
       stream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)
     })
@@ -64,6 +70,8 @@ object ContainerExtractor {
     ssc.start()
     ssc.awaitTermination()
   }
+
+
 
 
   def cosco(sc: SparkContext): Unit = {
